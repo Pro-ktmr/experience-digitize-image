@@ -1,0 +1,7 @@
+.hoverable {
+  cursor: pointer;
+}
+
+.hoverable:hover {
+  border: 1px red solid !important;
+}

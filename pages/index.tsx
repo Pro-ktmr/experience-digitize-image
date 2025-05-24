@@ -15,9 +15,14 @@ const GRADIATION_SIZE = 64;
 const getDefaultArray = () =>
   Array.from({ length: SIZE }, () => Array.from({ length: SIZE }, () => 0));
 
+const CHARACTERS = ["２", "３", "４", "５", "６", "７", "８", "９"];
 const STEPS = ["標本化", "量子化", "符号化"];
 
 export default function Home() {
+  const [char] = useState(
+    CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)]
+  );
+
   const [step, setStep] = useState(0);
   const [resolution, setResolution] = useState(4);
   const [gradiation, setGradiation] = useState(4);
@@ -34,7 +39,7 @@ export default function Home() {
 
     const calculatedResolution = 2 ** resolution;
 
-    showFigure(ctx);
+    showFigure(ctx, char);
     const tmp = getAverageColor(ctx, calculatedResolution);
     if (tmp.length === 0) return;
     setAverageColor(tmp);
@@ -58,6 +63,7 @@ export default function Home() {
         </Stepper>
         {step === 0 && (
           <Sampling
+            char={char}
             setStep={setStep}
             resolution={resolution}
             setResolution={setResolution}
@@ -133,11 +139,13 @@ export default function Home() {
 }
 
 const Sampling = ({
+  char,
   setStep,
   resolution,
   setResolution,
   averageColor,
 }: {
+  char: string;
   setStep: (value: number) => void;
   resolution: number;
   setResolution: (value: number) => void;
@@ -151,7 +159,7 @@ const Sampling = ({
     const ctx = beforeRef.current.getContext("2d");
     if (ctx == null) return;
 
-    showFigure(ctx);
+    showFigure(ctx, char);
   }, [beforeRef]);
 
   const afterRef = useRef<HTMLCanvasElement>(null);
@@ -411,7 +419,7 @@ const Coding = ({
   );
 };
 
-const showFigure = (ctx: CanvasRenderingContext2D) => {
+const showFigure = (ctx: CanvasRenderingContext2D, char: string) => {
   const gradient = ctx.createLinearGradient(0, 0, 0, SIZE);
   gradient.addColorStop(0, "#444");
   gradient.addColorStop(0.5, "#fff");
@@ -421,8 +429,9 @@ const showFigure = (ctx: CanvasRenderingContext2D) => {
 
   ctx.font = `${SIZE}px bold sans-serif`;
   ctx.textBaseline = "middle";
+  ctx.textAlign = "center";
   ctx.fillStyle = "#000";
-  ctx.fillText("の", 0, SIZE / 2);
+  ctx.fillText(char, SIZE / 2, SIZE / 2);
 };
 
 const getAverageColor = (

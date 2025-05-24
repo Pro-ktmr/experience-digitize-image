@@ -174,8 +174,14 @@ const Sampling = ({
 
   return (
     <>
+      <div style={{ textAlign: "center", marginBottom: 48 }}>
+        <Button onClick={() => setStep(1)}>次のステップへ</Button>
+      </div>
+      <Typography textAlign="center" marginBottom={2}>
+        解像度（縦と横の画素数）を選択してください。
+      </Typography>
       <Typography>
-        縦{2 ** resolution} × 横{2 ** resolution}
+        解像度：縦{2 ** resolution} × 横{2 ** resolution}
       </Typography>
       <Slider
         value={resolution}
@@ -188,9 +194,6 @@ const Sampling = ({
         valueLabelDisplay="auto"
         aria-labelledby="non-linear-slider"
       />
-      <div style={{ textAlign: "center", marginBottom: 48 }}>
-        <Button onClick={() => setStep(1)}>次のステップへ</Button>
-      </div>
       <div
         style={{
           display: "flex",
@@ -279,7 +282,16 @@ const Quantization = ({
 
   return (
     <>
-      <Typography>{2 ** gradiation}階調</Typography>
+      <div style={{ textAlign: "center", marginBottom: 48 }}>
+        <Button onClick={() => setStep(0)}>前のステップへ</Button>
+        <Button onClick={() => setStep(2)}>次のステップへ</Button>
+      </div>
+      <Typography textAlign="center" marginBottom={2}>
+        階調（各画素の色を何段階で表現するか）を選択してください。
+        <br />
+        また、順番にそれぞれの画素の色をパレットでクリックしてください。
+      </Typography>
+      <Typography>階調：{2 ** gradiation}階調</Typography>
       <Slider
         value={gradiation}
         min={1}
@@ -291,10 +303,6 @@ const Quantization = ({
         valueLabelDisplay="auto"
         aria-labelledby="non-linear-slider"
       />
-      <div style={{ textAlign: "center", marginBottom: 48 }}>
-        <Button onClick={() => setStep(0)}>前のステップへ</Button>
-        <Button onClick={() => setStep(2)}>次のステップへ</Button>
-      </div>
       <div
         style={{
           display: "flex",
@@ -349,7 +357,22 @@ const Quantization = ({
           gap: 16,
         }}
       >
-        <canvas ref={beforeRef} width={SIZE} height={SIZE} />
+        <canvas
+          ref={beforeRef}
+          width={SIZE}
+          height={SIZE}
+          onClick={(e) => {
+            const rect = beforeRef.current?.getBoundingClientRect();
+            if (rect == null) return;
+            const x = Math.floor(
+              ((e.clientX - rect.left) / rect.width) * calculatedResolution
+            );
+            const y = Math.floor(
+              ((e.clientY - rect.top) / rect.height) * calculatedResolution
+            );
+            setIdx(y * calculatedResolution + x);
+          }}
+        />
         <span style={{ fontSize: 64 }}>➡</span>
         <canvas ref={afterRef} width={SIZE} height={SIZE} />
       </div>
@@ -403,6 +426,9 @@ const Coding = ({
         <Button onClick={() => setStep(1)}>前のステップへ</Button>
         <Button onClick={() => setStep(3)}>次のステップへ</Button>
       </div>
+      <Typography textAlign="center" marginBottom={2}>
+        符号化の結果を確認してください。
+      </Typography>
       <div
         style={{
           display: "flex",
